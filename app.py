@@ -16,28 +16,36 @@ COUNTRIES = [
 def main():
     browser = webdriver.Firefox()
     wait = WebDriverWait(browser, 10)
+    print_all_tariffs(COUNTRIES, browser, wait)
+
+
+def print_all_tariffs(country_names, browser, wait):
     browser.get(TARIFF_URL)
 
     country_field = wait.until(EC.presence_of_element_located(
         (By.ID, 'countryName')
     ))
 
-    for country in COUNTRIES:
-        country_field.send_keys(country, Keys.RETURN)
+    for country_name in country_names:
+        _print_country_landline_tariff(country_name, country_field, wait)
 
-        # The page has two tables with ID #standardRatesTable so we
-        # have to guarantee the right one by starting at the div above
-        tariff_plan = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR,
-             '#paymonthlyTariffPlan #standardRatesTable '
-             'tr:first-child td:last-child')
-        ))
 
-        print(u'{}: {}'.format(
-            country, tariff_plan.get_attribute('innerHTML')
-        ))
+def _print_country_landline_tariff(country_name, country_field, wait):
+    country_field.send_keys(country_name, Keys.RETURN)
 
-        country_field.clear()
+    # The page has two tables with ID #standardRatesTable so we
+    # have to guarantee the right one by starting at the div above
+    tariff_plan = wait.until(EC.presence_of_element_located(
+        (By.CSS_SELECTOR,
+         '#paymonthlyTariffPlan #standardRatesTable '
+         'tr:first-child td:last-child')
+    ))
+
+    print(u'{}: {}'.format(
+        country_name, tariff_plan.get_attribute('innerHTML')
+    ))
+
+    country_field.clear()
 
 
 if __name__ == '__main__':

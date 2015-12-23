@@ -90,12 +90,11 @@ def test_print_country_landline_tariff_clears_input(input_field, html_field_wait
 
 
 def test_print_country_landline_tariff_prints_correctly(input_field, html_field_wait, request):
-    printer = StringIO()
-    sys.stdout = printer
+    sys.stdout = StringIO()
     def tear_down():
         sys.stdout = sys.__stdout__
     request.addfinalizer(tear_down)
 
     app._print_country_landline_tariff('Canada', input_field, html_field_wait)
 
-    assert printer.getvalue() == u'Canada: £5\n'
+    assert sys.stdout.getvalue() == u'Canada: £5\n'
